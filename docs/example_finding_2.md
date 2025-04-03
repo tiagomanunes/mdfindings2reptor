@@ -1,0 +1,41 @@
+
+Stuff that's not under a header will also be ignored, unless it's at the end of the file... see the end of the file.
+
+# Title
+Directory listing enabled
+
+# Summary
+This is a summary.
+
+# IMPACT
+You better not have sensitive data in those directories!
+
+Note that the script will not be sensitive to case in the headers, so write them as you like them. 
+
+It does expect a perfect match, however, so "Impact:" wouldn't be found due to that trailing colon.
+
+## Summary
+Uh-oh! This is also a summary! Remember, header levels don't matter. One of two things will happen now:
+
+- in normal mode, the script will print a warning and proceed to merge the content of the two "Summary" sections. Up to you to fix it either here or in SysReptor.
+- in `--strict` mode, the script will print an error and abort the processing of this file.
+
+# Recommendations
+Will this section be picked up? Trick question. It will not. Again, the script expects a perfect match, albeit case-insensitive, and looks for "recommendation", not "recommendationS".
+
+# References
+
+## Affected components
+* You may have noticed that there was no list of references, just above.
+- In normal mode, that's totally fine. In `--strict` mode, the script will print an error and abort the processing of this file.
+* This is the case for any empty sections, or any sections not found in the file, like the "recommendation" section we misspelled above.
+
+# Summary
+Ok, now you're pushing it with the summaries. Same as before, it will either be merged or cause a failure.
+
+---
+Now say that these lines are not meant to be part of this Summary section. You had the best intentions, even adding that horizontal line separator.
+
+Unfortunately, as far as the script is concerned, a section only ends when another section starts (with a new header), or when the end of file is reached.
+
+So if you want to have some content at the end of the file that is not related to a SysReptor section, you'll have to put it inside one last heading.
