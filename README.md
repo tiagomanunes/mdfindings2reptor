@@ -11,11 +11,11 @@ This script bridges that gap by taking your specially crafted (but not too much)
 
 ## Features
 - Can be passed a single file, multiple files, or a directory. Searches subdirectories if `--recurse` is used. Only `.md` files are processed.
-- Searches for content under specific markdown headers (i.e. `# Title`). Ignores case and header level. See [docs](docs) for examples.
+- Searches for content under specific markdown headers (e.g. `# Impact`). Ignores case and header level. See [docs](docs) for examples.
 - Maintains your formatting, line breaks, special characters... probably. Always check the outcome on SysReptor.
 - Warns you about unexpected things like duplicated, empty or missing sections. If using `--strict` mode, those warnings will become errors.
 - Ignores any other content in your markdown files, so you can still use these files for anything else that supports your findings.
-- No data loss should be possible: it only reads your markdown files, and SysReptor (seemingly, at the time of writing) creates new findings when pushing (as opposed to overwriting any existing ones). At worst, you'll have a bunch of findings to delete in your SysReptor project. It is recommended to test the push on a separate testing project, and pointing `reptor` to your final project when you're happy with the results.
+- No data loss should be possible: it only reads your markdown files, and SysReptor (seemingly, at the time of writing) creates new findings when pushing (as opposed to overwriting any existing ones). At worst, you'll have a bunch of findings to delete in your SysReptor project. It is recommended to test the push on a separate testing project, and to point `reptor` to your final project when you're happy with the results.
 
 ## Instructions
 
@@ -49,7 +49,7 @@ From [SysReptor's documentation](https://docs.sysreptor.com/cli/projects-and-tem
 }
 ```
 
-The script will always use `"in-progress"` for the `status` and an "empty" `cvss` score of `"CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N"` (for now). Aside from those, your markdown findings should include the other fields, as content under their respective headers. See [docs](docs) for more examples, but a bare-bones finding for the JSON above could be:
+The script will always use `"in-progress"` for the `status` and an "empty" `cvss` score of `"CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N"` (for now). Aside from those, your markdown findings should include the other fields, as content under their respective headers. See [docs](docs) for more examples, but a bare-bones finding that would result in the JSON above could be:
 
 ```
 # Title
@@ -72,21 +72,22 @@ HTML encode user-supplied inputs.
 * https://example.com/q=alert(1)
 ```
 
-Note that for the `title`, `summary`, `impact` and `recommendation` we directly use the text, while for `references` and `affected_components` we will attempt to parse list items (supporting both `- ` and `* ` list formats).
+Note that for the `title`, `summary`, `impact` and `recommendation` the script will directly use the text, while for `references` and `affected_components` it will attempt to parse list items (supporting both `- ` and `* ` list formats).
 
-When you're done with your findings, time to convert them to JSON!
+When you're done writing your findings, time to convert them to JSON!
 
 ### 4: Run the script
 Lets see some examples. 
 
-If you just want to process a bunch of findings and get prompted for any issues:
+If you just want to process a bunch of findings:
 ```
 $ python3 mdfindings2reptor.py /path/*.md
 ```
 
 If the script needs to check with you before doing something it might regret (like overwriting existing JSON files, or proceeding despite one bad markdown file), it will ask.
+The aggregated file containing all the findings (`aggregated_findings.json`) will be created in your current working directory. Individual JSON files, one for each Markdown file, will be created in the same directory where their counterpart was found.
 
-If you have all your findings in a tree structure, want to handle them all, don't care about any previously generated JSON files, and want the world to stop if any of them are not completely filled-in or fail to be processed for some reason:
+If you have all your findings in a tree structure, want to handle them all, don't care about overwriting any previously generated JSON files, and want the world to stop if any of them are not completely filled-in or fail to be processed for some reason:
 ```
 $ python3 mdfindings2reptor.py /path/to/findings/ --recurse --overwrite --strict
 ```

@@ -10,12 +10,12 @@ This is a summary.
 # IMPACT
 You better not have sensitive data in those directories!
 
-Note that the script will not be sensitive to case in the headers, so write them as you like them. 
+Speaking of sensitivity, note that the script will not be sensitive to case in the headers, so write them as you like them. 
 
 It does expect a perfect match, however, so "Impact:" wouldn't be found due to that trailing colon.
 
-## Summary
-Uh-oh! This is also a summary! Remember, header levels don't matter. One of two things will happen now:
+## SuMmArY
+Uh-oh! This is also a summary! Remember, header levels and case don't matter. One of two things will happen now:
 
 - in normal mode, the script will print a warning and proceed to merge the content of the two "Summary" sections. Up to you to fix it either here or in SysReptor.
 - in `--strict` mode, the script will print an error and abort the processing of this file.
@@ -37,6 +37,6 @@ Ok, now you're pushing it with the summaries. Same as before, it will either be 
 ---
 Now say that these lines are not meant to be part of this Summary section. You had the best intentions, even adding that horizontal line separator.
 
-Unfortunately, as far as the script is concerned, a section only ends when another section begins (with a new header), or when the end of file is reached.
+Unfortunately, as far as the script is concerned, a section only ends when another section begins (with a new header), or when end of file is reached.
 
 So if you want to have some content at the end of the file that is not related to a SysReptor section, you'll have to put it inside one last heading.

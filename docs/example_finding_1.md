@@ -15,7 +15,7 @@ The script ignores this even if it finds it, and submits an "empty" hard-coded C
 
 Kerberoasting is an attack that exploits weak Kerberos authentication.
 
-Note that the script will **respect** your `formatting`, so you should still find these line breaks, bolds, backticks, etc. on SysReptor. It will only trim empty lines at the start and end of the section.
+Note that the script will **respect** your `formatting`, so you should still find these line breaks, bolds, backticks, etc. on SysReptor. It will only trim empty lines at the start and end of each section.
 
 1. This numbered list
 2. should be there too,
@@ -31,7 +31,7 @@ This applies to every section that takes text, so this one (`summary`), `title`,
 Much severe. Very impact. Wow!
 
 ### This will also be ignored
-And order also doesn't matter.
+And the order of the sections also doesn't matter.
 
 ### Recommendation
 I think you get the picture by now. Onto the special sections...
