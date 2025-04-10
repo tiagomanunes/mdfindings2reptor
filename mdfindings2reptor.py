@@ -15,7 +15,7 @@ def main():
     if not md_files:
         _log_error("No markdown files found, quitting!")
         sys.exit(1)
-    
+
     aggregate_results = []
     overwrite_settings = {
         "always": args.overwrite,
@@ -31,7 +31,7 @@ def main():
     for md_file in md_files:
         _log_start(f"Processing file: '{md_file}'")
         result = _process_markdown_file(md_file, args.strict)
-        
+
         if result is None:
             if _should_abort(proceed_settings):
                 abort = True
@@ -45,7 +45,7 @@ def main():
             output_file = md_file.with_suffix('.json')
             if _should_write(output_file, overwrite_settings):
                 _write_json(output_file, result)
-    
+
     aggregate_file = Path("aggregated_findings.json")
     if not abort and _should_write(aggregate_file, overwrite_settings):
         _log_start("Aggregating results.")
@@ -93,7 +93,7 @@ def _process_markdown_file(md_file: Path, strict: bool) -> Dict[str, Any]:
         _log_error(f"Error processing '{md_file}': {str(e)}", True)
         return None
 
-    json = {
+    json_output = {
         "status": "in-progress",
         "data": {
             "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N",
@@ -114,22 +114,22 @@ def _process_markdown_file(md_file: Path, strict: bool) -> Dict[str, Any]:
     for key, processor in _PROCESSORS.items():
         processed = False
         if key in sections:
-            json["data"][key] = processor(sections[key])
+            json_output["data"][key] = processor(sections[key])
             processed = True
         elif strict:
             _log_error(f"Missing required section '{key}' in '{md_file}', aborting due to strictness level", True)
             return None
         else:
             _log_warn(f"Missing section '{key}' in '{md_file}'", True)
-        
-        if processed and not json["data"][key]:
+
+        if processed and not json_output["data"][key]:
             if strict:
                 _log_error(f"Section '{key}' in '{md_file}' is present but empty, aborting due to strictness level", True)
                 return None
             else:
                 _log_warn(f"Section '{key}' in '{md_file}' is present but empty", True)
 
-    return json
+    return json_output
 
 
 def _md_list_to_json_array(markdown: str) -> List[str]:
@@ -144,14 +144,15 @@ def _md_list_to_json_array(markdown: str) -> List[str]:
             if item:
                 items.append(item)
     return items
-    
+
 _PROCESSORS = {
     "title": lambda s: s,
     "summary": lambda s: s,
     "impact": lambda s: s,
     "recommendation": lambda s: s,
     "references": _md_list_to_json_array,
-    "affected_components": _md_list_to_json_array
+    "affected_components": _md_list_to_json_array,
+    "description": lambda s: s
 }
 
 def _extract_sections(content: str, strict: bool) -> Dict[str, str]:
@@ -173,7 +174,7 @@ def _extract_sections(content: str, strict: bool) -> Dict[str, str]:
             if current_heading:
                 # Save the previous section
                 _save_section(sections, current_heading, current_content, strict)
-            
+
             # Start a new section
             current_heading = match.group(2).strip().lower().replace(" ", "_")
             current_content = []
@@ -203,7 +204,7 @@ def _trim_and_merge(current_content) -> None:
         current_content.pop(0)
     while current_content and current_content[-1] == "":
         current_content.pop()
-    
+
     return "\n".join(current_content)
 
 def _should_abort(proceed_settings: Dict[str, bool]) -> bool:
@@ -213,7 +214,7 @@ def _should_abort(proceed_settings: Dict[str, bool]) -> bool:
     if proceed_settings["always"]:
         _log_warn("Processing failed, but proceeding to next file", True)
         return False
-    
+
     proceed = _prompt_user("Processing failed, would you like to proceed?", _PROCEED_OPTIONS)
     if proceed == 'n':
         _log_warn("Quitting!")
@@ -229,21 +230,21 @@ def _should_write(output_file: Path, overwrite_settings: Dict[str, bool]) -> boo
     """
     if not output_file.exists():
         return True
-    
+
     if overwrite_settings["always"]:
         _log_warn(f"Overwriting existing file '{output_file}'", True)
         return True
     if overwrite_settings["never"]:
         _log_warn(f"Not overwriting file '{output_file}'", True)
         return False
-    
+
     overwrite = _prompt_user(f"Output file '{output_file}' exists, overwrite?", _OVERWRITE_OPTIONS)
     if overwrite == 'n' or overwrite == 'e':
         if overwrite == 'e':
             overwrite_settings["never"] = True
         _log_info(f"Skipping write for '{output_file}'.", True)
         return False
-    
+
     if overwrite == 'a':
         overwrite_settings["always"] = True
     return True
@@ -260,7 +261,7 @@ def _write_json(output_file: Path, data: Dict[str, Any]) -> None:
         _log_error(f"Failed to write {output_file}: {str(e)}", True)
         _log_warn("Quitting!")
         sys.exit(1)
-    
+
 def _prompt_user(message: str, options: Dict[str, str]) -> str:
     """
     Prompt the user with a message and return their choice.

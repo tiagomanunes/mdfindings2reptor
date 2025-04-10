@@ -25,7 +25,9 @@ Note that the script will **respect** your `formatting`, so you should still fin
 It should even support code blocks!
 ```
 
-This applies to every section that takes text, so this one (`summary`), `title`, `impact` and `recommendation`.
+The only thing we don't support (for now? Probably for a long while to be honest...) is images. It just gets too complicated. So you'll have to add those in SysReptor.
+
+This applies to every section that takes text, so this one (`summary`), `title`, `impact` and `recommendation`. Ah and `description` too.
 
 ### Impact
 Much severe. Very impact. Wow!
@@ -45,6 +47,15 @@ I think you get the picture by now. Onto the special sections...
 * This section also must be in list format. Note that asterisk lists are also supported.
 * If you're a heretic you can also mix dashes and asterisks, the script won't care.
 * By the way, the script turns spaces between words in titles into underscores. That's how this ends up in `affected_components`.
+
+# Description
+Oh cool! I just realised that you can write the "Finding Evidence" here, and it will go into the "Details" section in SysReptor.
+
+Since we do _our **very** best_ to keep your formatting, it should still be found there.
+
+```
+Even code blocks, where you did all that cool hacker stuff!
+```
 
 # Miscellaneous
 This section totally matters. No just kidding it's also ignored.

@@ -9,6 +9,12 @@ If you're like me and
 SysReptor's [CLI](https://docs.sysreptor.com/cli/projects-and-templates/finding/) lets you automatically push findings to your project, provided that they are in JSON (or TOML) format.
 This script bridges that gap by taking your specially crafted (but not too much) notes and transforming them to the expected JSON format.
 
+## Doesn't this depend on the report template?
+Yes! For now.
+
+I wrote this (well, a crude version of this) to prepare for the Hack The Box CPTS exam report, so it is known and ready to work with that.
+I am in the process of adapting the script so that it can also handle different report templates with other fields in the findings. Stay tuned.
+
 ## Features
 - Can be passed a single file, multiple files, or a directory. Searches subdirectories if `--recurse` is used. Only `.md` files are processed.
 - Searches for content under specific markdown headers (e.g. `# Impact`). Ignores case and header level. See [docs](docs) for examples.
@@ -40,6 +46,7 @@ From [SysReptor's documentation](https://docs.sysreptor.com/cli/projects-and-tem
       "https://owasp.org/www-community/attacks/xss/"
     ],
     "impact": "The impact was heavy.",
+    "description": "This is the finding evidence.",
     "recommendation": "HTML encode user-supplied inputs.",
     "affected_components": [
       "https://example.com/alert(1)",
@@ -70,9 +77,12 @@ HTML encode user-supplied inputs.
 # Affected components
 * https://example.com/alert(1)
 * https://example.com/q=alert(1)
+
+# Description
+This is the finding evidence.
 ```
 
-Note that for the `title`, `summary`, `impact` and `recommendation` the script will directly use the text, while for `references` and `affected_components` it will attempt to parse list items (supporting both `- ` and `* ` list formats).
+Note that for the `title`, `summary`, `impact`, `recommendation` and `description`, the script will directly use the text. For `references` and `affected_components`, it will attempt to parse list items (supporting both `- ` and `* ` list formats).
 
 When you're done writing your findings, time to convert them to JSON!
 

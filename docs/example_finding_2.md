@@ -34,8 +34,11 @@ Will this section be picked up? Trick question. It will not. Again, the script e
 # Summary
 Ok, now you're pushing it with the summaries. Same as before, it will either be merged with the other two summary sections or cause a failure.
 
+# Description
+Yep, this works too.
+
 ---
-Now say that these lines are not meant to be part of this Summary section. You had the best intentions, even adding that horizontal line separator.
+Now say that these lines are not meant to be part of this Description section. You had the best intentions, even adding that horizontal line separator.
 
 Unfortunately, as far as the script is concerned, a section only ends when another section begins (with a new header), or when end of file is reached.
 
