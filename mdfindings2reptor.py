@@ -8,7 +8,10 @@ from typing import List, Dict, Any
 
 def main():
     _log_info("Markdown findings to SysReptor JSON converter, by @tiagomanunes")
-    _log_warn("This script is provided as-is. Use at your own risk, and definitely don't blame SysReptor for any issues\n")
+    _log_warn(
+        "This script is provided as-is."
+        "Use at your own risk, and definitely don't blame SysReptor for any issues\n"
+    )
     args = _parse_args()
 
     md_files = _find_markdown_files(args.path, args.recurse)
@@ -52,21 +55,50 @@ def main():
         _write_json(aggregate_file, aggregate_results)
         _print_next_steps()
     else:
-        _log_warn("If you're reading this, something went wrong. Do not push to SysReptor. Please check the output above.")
+        _log_warn(
+            "If you're reading this, something went wrong."
+            "Do not push to SysReptor. Please check the output above."
+        )
         sys.exit(1)
 
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="convert markdown files to JSON format, and aggregate them into a single JSON file",
+        description=
+            "convert markdown files to JSON format,"
+            "and aggregate them into a single JSON file",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument("path", nargs='+', help="markdown file(s) or directory to process (only .md files will be processed)")
-    parser.add_argument("--recurse", action="store_true", help="recursively process markdown files in sub-directories")
-    parser.add_argument("--strict", action="store_true", help="enable strict mode, failing if any expected field fails to be processed")
-    parser.add_argument("--overwrite", action="store_true", help="automatically overwrite existing JSON files without prompting")
-    parser.add_argument("--aggregate-only", action="store_true", help="skip producing individual JSON files, only produce aggregate JSON file")
-    parser.add_argument("--custom-fields", action="store_true", help="only parse custom fields, marked with '*' in the markdown headings")
+    parser.add_argument(
+        "path",
+        nargs='+',
+        help="markdown file(s) or directory to process (only .md files will be processed)"
+    )
+    parser.add_argument(
+        "--recurse",
+        action="store_true",
+        help="recursively process markdown files in sub-directories"
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="enable strict mode, failing if any expected field fails to be processed"
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="automatically overwrite existing JSON files without prompting"
+    )
+    parser.add_argument(
+        "--aggregate-only",
+        action="store_true",
+        help="skip producing individual JSON files, only produce aggregate JSON file"
+    )
+    parser.add_argument(
+        "--custom-fields",
+        action="store_true",
+        help="only parse custom fields, marked with '*' in the markdown headings"
+    )
     args = parser.parse_args()
 
     _log_args(args)
@@ -138,14 +170,20 @@ def process_native(sections: Dict[str, str], json_output: Dict[str, Any], strict
             json_output["data"][key] = processor(sections[key])
             processed = True
         elif strict:
-            _log_error(f"Missing required section '{key}' in '{md_file}', aborting due to strictness level", True)
+            _log_error(
+                f"Missing required section '{key}' in '{md_file}',"
+                "aborting due to strictness level", True
+            )
             return None
         else:
             _log_warn(f"Missing section '{key}' in '{md_file}'", True)
 
         if processed and not json_output["data"][key]:
             if strict:
-                _log_error(f"Section '{key}' in '{md_file}' is present but empty, aborting due to strictness level", True)
+                _log_error(
+                    f"Section '{key}' in '{md_file}' is present but empty,"
+                    "aborting due to strictness level", True
+                )
                 return None
             else:
                 _log_warn(f"Section '{key}' in '{md_file}' is present but empty", True)
@@ -176,7 +214,7 @@ _PROCESSORS = {
 def _extract_sections(content: str, strict: bool) -> Dict[str, str]:
     """
     Extract sections from markdown content based on headings.
-    Aborts if strict mode is enabled and duplicate headings are found, otherwise merges duplicate headings.
+    Aborts if strict mode is enabled and duplicate headings are found, otherwise merges them.
     Discards any content that is not under a heading.
     """
     sections = {}
@@ -208,7 +246,10 @@ def _extract_sections(content: str, strict: bool) -> Dict[str, str]:
 def _save_section(sections: Dict[str, str], heading: str, content: List[str], strict: bool) -> None:
     if heading in sections:
         if strict:
-            _log_error(f"Duplicate heading '{heading}' found, aborting due to strictness level", True)
+            _log_error(
+                f"Duplicate heading '{heading}' found,"
+                "aborting due to strictness level", True
+            )
             return None
         else:
             _log_warn(f"Duplicate heading '{heading}' found, merging content", True)
@@ -291,7 +332,10 @@ def _prompt_user(message: str, options: Dict[str, str]) -> str:
 
 def _log_args(args: argparse.Namespace) -> None:
     if args.strict:
-        _log_info("Strict mode enabled, processing will fail if any JSON field fails to be parsed or is missing")
+        _log_info(
+            "Strict mode enabled,"
+            "processing will fail if any JSON field fails to be parsed or is missing"
+        )
     if args.overwrite:
         _log_warn("Existing files will be overwritten without confirmation")
     if args.aggregate_only:
@@ -304,7 +348,10 @@ def _log_args(args: argparse.Namespace) -> None:
 def _print_next_steps():
     _log_info("Processing complete! Next steps:")
     _log_info("- to push a single file to SysReptor, 'cat <your_file.json> | reptor finding'", True)
-    _log_info("- to push all processed findings to SysReptor, 'cat aggregated_findings.json | reptor finding'", True)
+    _log_info(
+        "- to push all processed findings to SysReptor,"
+        "'cat aggregated_findings.json | reptor finding'", True
+    )
 
 # Eww... but it's not worth more complexity
 def _log_start(message: str) -> None:
