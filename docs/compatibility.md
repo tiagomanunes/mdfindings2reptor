@@ -5,7 +5,7 @@ The following is a breakdown of compatibility with other report templates, and a
 
 ## Hack The Box certification report templates
 
-### Compatible
+### "Natively" Compatible
 **CPTS**, **CBBH**, **CAPE** and **CWEE**(1) all share the same finding structure, making the script compatible with all of them.
 
 #### Known issues
@@ -14,18 +14,17 @@ The following is a breakdown of compatibility with other report templates, and a
 #### CWE field
 The CWE field is currently not set by the script on any of these templates. This may (or may not) come in the future.
 
-### NOT compatible
-To be explicit, the CDSA template has a completely different finding structure, so the script is currently not compatible.
+### Compatible via `--custom-fields`
+The **CDSA** template has a completely different finding structure. You can still use this tool by using specific headings and using the `--custom-fields` flag. [See the docs for a template you can use](cdsa_finding.md).
 
 ## OffSec certification report templates
-The script is not currently compatible with any of the OffSec templates.
 
-**OSCP** compatibility is a Work In Progress.
+The **OSCP** template has a different finding structure. You can still use this tool by using specific headings and using the `--custom-fields` flag. [See the docs for a template you can use](cdsa_finding.md).
 
-Other templates may (or may not) follow after that.
+I've personally tested this with my own report, which I cannot say for any other of the OffSec templates. But the custom field approach probably works for those too. Finding the right headings in [SysReptor's templates](https://github.com/Syslifters/sysreptor/blob/main/demo_data/offsec-designs/) will be up to you (look for `[[finding_fields]]`).
 
 ## Any other report templates
-Probably not compatible, unless they have a similar finding structure to Hack The Box's. Feel free to point me in their direction for a closer look.
+Probably not "natively" compatible, unless they have a similar finding structure to Hack The Box's offensive certs, but probably compatible using the `--custom-fields` flag. Check out the [CDSA](cdsa_finding.md) and [OSCP](oscp_finding.md) examples of what that would look like.
 
 ## Disclaimer: "compatibility" versus "support"
 Words are important, so I was careful not to say "supported".

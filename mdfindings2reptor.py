@@ -30,7 +30,7 @@ def main():
 
     for md_file in md_files:
         _log_start(f"Processing file: '{md_file}'")
-        result = _process_markdown_file(md_file, args.strict)
+        result = _process_markdown_file(md_file, args.strict, args.custom_fields)
 
         if result is None:
             if _should_abort(proceed_settings):
@@ -66,6 +66,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--strict", action="store_true", help="enable strict mode, failing if any expected field fails to be processed")
     parser.add_argument("--overwrite", action="store_true", help="automatically overwrite existing JSON files without prompting")
     parser.add_argument("--aggregate-only", action="store_true", help="skip producing individual JSON files, only produce aggregate JSON file")
+    parser.add_argument("--custom-fields", action="store_true", help="only parse custom fields, marked with '*' in the markdown headings")
     args = parser.parse_args()
 
     _log_args(args)
@@ -83,13 +84,13 @@ def _find_markdown_files(paths: List[str], recurse: bool = False) -> List[Path]:
             md_files.append(path)
     return md_files
 
-def _process_markdown_file(md_file: Path, strict: bool) -> Dict[str, Any]:
+def _process_markdown_file(md_file: Path, strict: bool, custom_fields: bool = False) -> Dict[str, Any]:
     """
     Process a markdown file and convert it to JSON.
     """
     try:
         content = md_file.read_text(encoding='utf-8')
-    except Exception as e:
+    except (FileNotFoundError, PermissionError, UnicodeDecodeError, OSError) as e:
         _log_error(f"Error processing '{md_file}': {str(e)}", True)
         return None
 
@@ -111,6 +112,26 @@ def _process_markdown_file(md_file: Path, strict: bool) -> Dict[str, Any]:
         _log_warn(f"No sections found in '{md_file}'", True)
         return None
 
+    if custom_fields:
+        process_custom(sections, json_output)
+    else:
+        process_native(sections, json_output, strict, md_file)
+
+    return json_output
+
+def process_custom(sections: Dict[str, str], json_output: Dict[str, Any]) -> None:
+    """
+    Process custom fields, marked with '*' in the markdown headings.
+    """
+    for key, content in sections.items():
+        if re.match(r"^\*[^\s\*]+$", key):
+            clean_key = key[1:]
+            json_output["data"][clean_key] = content
+
+def process_native(sections: Dict[str, str], json_output: Dict[str, Any], strict: bool, md_file: Path) -> None:
+    """
+    Process native fields, using the _PROCESSORS dictionary to convert markdown sections to JSON.
+    """
     for key, processor in _PROCESSORS.items():
         processed = False
         if key in sections:
@@ -128,9 +149,6 @@ def _process_markdown_file(md_file: Path, strict: bool) -> Dict[str, Any]:
                 return None
             else:
                 _log_warn(f"Section '{key}' in '{md_file}' is present but empty", True)
-
-    return json_output
-
 
 def _md_list_to_json_array(markdown: str) -> List[str]:
     """
@@ -257,7 +275,7 @@ def _write_json(output_file: Path, data: Dict[str, Any]) -> None:
     try:
         output_file.write_text(json.dumps(data, indent=4), encoding='utf-8')
         _log_info(f"Wrote output to {output_file}", True)
-    except Exception as e:
+    except (PermissionError, UnicodeEncodeError, OSError) as e:
         _log_error(f"Failed to write {output_file}: {str(e)}", True)
         _log_warn("Quitting!")
         sys.exit(1)
@@ -280,6 +298,8 @@ def _log_args(args: argparse.Namespace) -> None:
         _log_info("Skipping output of individual JSON files")
     if args.recurse:
         _log_info("Recursing into sub-directories")
+    if args.custom_fields:
+        _log_info("Only parsing custom fields, marked with '*' in the markdown headings")
 
 def _print_next_steps():
     _log_info("Processing complete! Next steps:")

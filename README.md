@@ -10,9 +10,7 @@ SysReptor's [CLI](https://docs.sysreptor.com/cli/projects-and-templates/finding/
 This script bridges that gap by taking your specially crafted (but not too much) notes and transforming them to the expected JSON format.
 
 ## Doesn't this depend on the report template?
-Yes! See [compatible report templates](docs/compatibility.md) for a breakdown of the current status, but long story short it is compatible with Hack The Box CPTS, CBBH, CAPE and CWEE.
-
-I am working on handling different report templates with other fields in the findings. Stay tuned.
+Yes! See [compatible report templates](docs/compatibility.md) for a breakdown of the current status. Long story short, it is "natively" compatible with Hack The Box CPTS, CBBH, CAPE and CWEE, but probably handles just about anything by using a special flag.
 
 ## Features
 - Can be passed a single file, multiple files, or a directory. Searches subdirectories if `--recurse` is used. Only `.md` files are processed.
@@ -20,6 +18,7 @@ I am working on handling different report templates with other fields in the fin
 - Maintains your formatting, line breaks, special characters... probably. Always check the outcome on SysReptor.
 - Warns you about unexpected things like duplicated, empty or missing sections. If using `--strict` mode, those warnings will become errors.
 - Ignores any other content in your markdown files, so you can still use these files for anything else that supports your findings.
+- If your report template is different, you can try using the `--custom-fields` flag to parse headings you've manually marked with a `*`.
 - No data loss should be possible: it only reads your markdown files, and SysReptor (seemingly, at the time of writing) creates new findings when pushing (as opposed to overwriting any existing ones). At worst, you'll have a bunch of findings to delete in your SysReptor project. It is recommended to test the push on a separate testing project, and to point `reptor` to your final project when you're happy with the results.
 
 ## Instructions
@@ -33,6 +32,7 @@ $ git clone https://github.com/tiagomanunes/mdfindings2reptor.git
 ```
 
 ### 3: Write your findings
+#### "Native" structure
 From [SysReptor's documentation](https://docs.sysreptor.com/cli/projects-and-templates/finding/), this is the JSON structure they expect for our findings:
 ```
 {
@@ -85,8 +85,18 @@ Note that for the `title`, `summary`, `impact`, `recommendation` and `descriptio
 
 When you're done writing your findings, time to convert them to JSON!
 
+#### Custom fields
+If your report is special with a completely different finding structure (say, like [CDSA](cdsa_finding.md) or [OSCP](oscp_finding.md)), you can:
+
+1. research the expected finding IDs in SysReptor's template (e.g. [here for CDSA](https://github.com/Syslifters/sysreptor/blob/main/demo_data/htb-designs/cdsa.toml), look for `[[finding_fields]]`);
+2. use those IDs as your headings, and prefix them with a `*` (e.g. `# *incident_overview`).
+
+Any fields of type "string" and "markdown" will definitely work. No guarantees made for other types.
+
+Note that _only_ those fields marked with the `*` will now be parsed. The scripts works only in native _or_ custom mode.
+
 ### 4: Run the script
-Lets see some examples. 
+Lets see some examples.
 
 If you just want to process a bunch of findings:
 ```
@@ -102,6 +112,11 @@ $ python3 mdfindings2reptor.py /path/to/findings/ --recurse --overwrite --strict
 ```
 
 If you don't like that this generates a bunch of JSON files (one for each Markdown file in fact), and just want the final aggregate, use `--aggregate-only`. You can always go back and convert hand-picked Markdown files, for example if you have already imported everything to SysReptor but suddenly have a new finding to report.
+
+If your report is special and you've used the appropriate headings, use the `--custom-fields` flag:
+```
+$ python3 mdfindings2reptor.py /path/to/findings/ --custom-fields --aggregate-only --recurse
+```
 
 ### 5: Push to SysReptor
 The script will actually tell you what to do next.
