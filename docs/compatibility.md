@@ -6,10 +6,9 @@ The following is a breakdown of compatibility with other report templates, and a
 ## Hack The Box certification report templates
 
 ### "Natively" Compatible
-**CPTS**, **CBBH**, **CAPE** and **CWEE**(1) all share the same finding structure, making the script compatible with all of them.
+**CPTS**, **CBBH** and **CAPE** all share the same finding structure, making the script compatible with all of them.
 
-#### Known issues
-(1) The **CWEE** report template uses CVSS version 4.0. The script currently sets a "baseline" CVSS version 3.1 string. Uploading the findings will work, but this issue will be pointed out by SysReptor's validator. I hope to fix this shortly.
+(Note that CWEE also uses the same structure, but the exam requires the report to be in Markdown format, so you may not want to use SysReptor for it. If you somehow still do, note that the CWEE report template uses CVSS version 4.0. The script currently sets a "baseline" CVSS version 3.1 string. Uploading the findings will work, but this issue will be pointed out by SysReptor's validator.)
 
 #### CWE field
 The CWE field is currently not set by the script on any of these templates. This may (or may not) come in the future.

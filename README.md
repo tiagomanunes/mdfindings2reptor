@@ -10,7 +10,7 @@ SysReptor's [CLI](https://docs.sysreptor.com/cli/projects-and-templates/finding/
 This script bridges that gap by taking your specially crafted (but not too much) notes and transforming them to the expected JSON format.
 
 ## Doesn't this depend on the report template?
-Yes! See [compatible report templates](docs/compatibility.md) for a breakdown of the current status. Long story short, it is "natively" compatible with Hack The Box CPTS, CBBH, CAPE and CWEE, but probably handles just about anything by using a special flag.
+Yes! See [compatible report templates](docs/compatibility.md) for a breakdown of the current status. Long story short, it is "natively" compatible with Hack The Box CPTS, CBBH and CAPE, but probably handles just about anything by using a special flag.
 
 ## Features
 - Can be passed a single file, multiple files, or a directory. Searches subdirectories if `--recurse` is used. Only `.md` files are processed.
